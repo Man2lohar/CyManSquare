@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyManSquare</title>
+    <link rel="icon" href="assets\images\logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="..\src\styles\main.css">
+    <link rel="stylesheet" href="..\src\styles\menubar.css">
+    <link rel="stylesheet" href="..\src\styles\body.css">
+    <link rel="stylesheet" href="..\src\styles\footer.css">
+</head>
+<body>
+    <div class="particles"></div>
+    <header>
+        <div class="logo-container">
+            <a href="index.html" style="display: flex; align-items: center; text-decoration: none;">
+                <img src="assets/images/logo.png" alt="Homepage Logo" style="width:40px; height:auto; margin-right: 10px;">
+                <h2>CyManSquare</h2>
+            </a>
+        </div>
+        
+        <nav>
+            <ul class="menu">
+                <li class="has-dropdown"><a href="#features">Features</a>
+                    <div class="dropdown-content">
+                        <ul>
+                            <ul>
+                                <h4>KMC</h4>
+                                <li><a onclick="window.open('features/data_extraction_kmc/index_kmc.html', '_blank')" class="hover-symbol">Area Calculation From Data</a></li>
+                                <li><a href="#item3">Area Calculation From Drawing</a></li>
+                                <li><a href="#item2">Drawing Checking With AI</a></li>
+                                
+                            </ul>
+                            <ul>
+                                <h4>NKDA</h4>
+                                <li><a href="#item2">Area Calculation From Drawing</a></li>
+                                <li><a href="#item2">Drawing Check</a></li>
+                            </ul>
+                            
+                        </ul>
+                    </div>
+                </li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    
+        <div class="auth-options" id="authOptions">
+            <button class="login-btn" onclick="showLogin()">Login</button>
+            <button class="signup-btn" onclick="showSignup()">Sign Up</button>
+        </div>
+    
+        <!-- User dropdown (shown when logged in) -->
+        <div class="user-options" id="userOptions">
+            <a href="#dashboard">Dashboard</a>
+            <a href="#logout" onclick="logout()">Logout</a>
+        </div>
+    </header>
+    
+
+    <div class="hero">
+        <h1>Welcome to <span class="cyman">CyManSquare</span></h1>
+        <p>Your portal to the future</p>
+    </div>
+
+    <section id="features">
+        <h2>Our Features</h2>
+        <div class="card-container">
+            <div class="card" onclick="window.open('features/data_extraction_kmc/index_kmc.html', '_blank')">
+                <h3>Data Extraction</h3>
+                <p>Kolkata Municipal Corporation</p>
+                <img src="https://upload.wikimedia.org/wikipedia/en/5/5c/Kolkata_Municipal_Corporation_%28emblem%29.png"
+                    alt="KMC Logo" style="width:40px; height:auto; margin-top: 10px;">
+            </div>                        
+            <div class="card">
+                <h3>Futuristic Design</h3>
+                <p>Our solutions blend form and function seamlessly.</p>
+            </div>
+            <div class="card">
+                <h3>Lightning-Fast APIs</h3>
+                <p>Boost performance with speed and scalability.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <h2>Our Services</h2>
+        <div class="card-container">
+            <div class="card">
+                <h3>Consultancy</h3>
+                <p>We help you shape your digital future.</p>
+            </div>
+            <div class="card">
+                <h3>Cloud Solutions</h3>
+                <p>Reliable cloud infrastructure tailored for you.</p>
+            </div>
+            <div class="card">
+                <h3>Blockchain Expertise</h3>
+                <p>Secure your transactions with blockchain tech.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Contact Section -->
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <div class="connect">
+            <div class="whatsapp">
+                <h1>Contact Us via WhatsApp</h1>
+                <p>Click the button below to chat with us on WhatsApp:</p>
+                <a href="https://wa.me/7318998346" target="_blank" class="whatsapp-button">Chat on WhatsApp</a>
+                <div class="info">
+                    <p>Available: 24 x 7</p>
+                </div>
+            </div>
+            <div class="whatsapp-scan">
+                <img src="assets/images/whatsapp.png" alt="Homepage Logo">
+                <p>scan it to chat</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-top-line"></div>
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-column">
+                    <h3>COMPANY</h3>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>PRODUCT</h3>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#integrations">Integrations</a></li>
+                        <li><a href="#roadmap">Product Roadmap</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>SUPPORT</h3>
+                    <ul>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#help">Help Center</a></li>
+                        <li><a href="#support">Support Portal</a></li>
+                        <li><a href="#documentation">Documentation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column social">
+                    <h3>CONNECT</h3>
+                    <div class="social-icons">
+                        <a href="#facebook" class="social-icon">
+                            <img src="assets/images/facebook.png" alt="Facebook" class="icon-default">
+                            <img src="assets/images/facebook-color.png" alt="Facebook" class="icon-hover">
+                        </a>
+                        <a href="#twitter" class="social-icon">
+                            <img src="assets/images/twitter.png" alt="Twitter" class="icon-default">
+                            <img src="assets/images/twitter-color.png" alt="Twitter" class="icon-hover">
+                        </a>
+                        <a href="#linkedin" class="social-icon">
+                            <img src="assets/images/linkedin.png" alt="LinkedIn" class="icon-default">
+                            <img src="assets/images/linkedin-color.png" alt="LinkedIn" class="icon-hover">
+                        </a>
+                        <a href="#instagram" class="social-icon">
+                            <img src="assets/images/instagram.png" alt="Instagram" class="icon-default">
+                            <img src="assets/images/instagram-color.png" alt="Instagram" class="icon-hover">
+                        </a>
+                        <a href="#youtube" class="social-icon">
+                            <img src="assets/images/youtube.png" alt="YouTube" class="icon-default">
+                            <img src="assets/images/youtube-color.png" alt="YouTube" class="icon-hover">
+                        </a>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="footer-bottom-line"></div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CyManSquare</p>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy Policy</a> | 
+                    <a href="#terms">Terms of Service</a> | 
+                    <a href="#cookie">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="..\..\src\js\login.js"></script>
+    <script src="..\src\js\index.js"></script>
+</body>
+</html>

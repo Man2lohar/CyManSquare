@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Extraction</title>
+    <link rel="icon" href="..\..\assets\images\logo.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="..\..\..\src\styles\data_extraction_kmc\style_kmc.css">
+    <style>
+        p {
+            font-size: 1em;
+            margin-bottom: 30px;
+            color: #585858;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-section">
+            <div class="logo-container">
+                <a href="index_kmc.html" style="display: flex; align-items: center; text-decoration: none;">
+                    <img src="../../assets/images/logo.png" alt="Homepage Logo" style="width:40px; height:auto; margin-right: 10px;">
+                    <h2>CyManSquare</h2>
+                </a>
+            </div>
+            <h1>Data Table</h1>
+            <label for="file-input" class="custom-file-upload">
+                Choose File
+            </label>
+            <input type="file" id="file-input" accept=".xls,.xlsx,.csv">
+            <button id="generate-tables" class="back-button">Generate Tables</button>
+            <button id="calculate" class="back-button">Calculate</button>
+            <button id="instruction" class="back-button">Instruction</button>
+        </div>
+        <div class="container">
+            <p><span style="color: orange;">'Orange'</span> color text denote duplicate data  |  
+                <span style="color: red;">'Red'</span> color text denote wrong data</p>
+                
+            <table id="data-table">
+                <thead>
+                    <tr id="table-header">
+                        <!-- Headers will be dynamically inserted here -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data Rows Go Here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+        <!-- Errors show here -->
+    <div id="errorModal" class="modal">
+    <div class="modal-content">
+        <span id="modalClose" class="close">&times;</span>
+        <h3>Error Messages</h3>
+        <div id="modalBody"></div>
+    </div>
+</div>    
+    
+<script src="..\..\..\src\library\xlsx.full.min.js"></script>
+<script src="..\..\..\src\js\data_extraction_kmc\index.js"></script>
+
+</body>
+</html>
