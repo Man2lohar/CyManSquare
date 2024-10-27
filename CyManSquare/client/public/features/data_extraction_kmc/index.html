@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Extraction</title>
+    <link rel="icon" href="..\..\assets\images\logo.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="..\..\..\src\styles\data_extraction_kmc\style_kmc.css">
+    <style>
+        p {
+            font-size: 1em;
+            margin-bottom: 30px;
+            color: #585858;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-section">
+            <a href="index.html">
+                <img src="..\..\assets\images\logo.png" alt="Homepage Logo" style="width:50px; height:auto;">
+            </a>
+            <h1>Data Table</h1>
+            <label for="file-input" class="custom-file-upload">
+                Choose File
+            </label>
+            <input type="file" id="file-input" accept=".xls,.xlsx,.csv">
+            <button id="generate-tables" class="back-button">Generate Tables</button>
+            <button id="calculate" class="back-button">Calculate</button>
+            <button id="instruction" class="back-button">Instruction</button>
+        </div>
+        <div class="container">
+            <p><span style="color: orange;">'Orange'</span> color text denote duplicate data  |  
+                <span style="color: red;">'Red'</span> color text denote wrong data</p>
+                
+            <table id="data-table">
+                <thead>
+                    <tr id="table-header">
+                        <!-- Headers will be dynamically inserted here -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data Rows Go Here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="..\..\..\src\library\xlsx.full.min.js"></script>
+<script>
+    // Function to display data in the table
+    function displayData(csv) {
+        const rows = csv.split('\n');
+        const tableHeader = document.getElementById('table-header');
+        const tableBody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
+
+        // Clear existing table content
+        tableHeader.innerHTML = '';
+        tableBody.innerHTML = '';
+
+        // Track seen rows for duplication check
+        const seenRows = new Set();
+        const duplicateRows = new Set();
+
+        // Define a set of valid layer names
+        const validLayerNames = new Set([
+            "Plot", "Road", "Splay", "Strip", "Ground Coverage", "Tree Cover", "Open Space", 
+            "Open Space_Ext_1", "Residential", "Mercantile_wholesale", "Mercantile_retail", "Business", "Institutional", "Storage", 
+            "Assembly", "Hazardous", "Industrial", "Educational", "Internal Road", "Alignment", "Stair", 
+            "Lift", "Lift_Ext_1", "Loft", "Cupboard", "Tenement", "Tenement_Ext_1", 
+            "Tenement_Single", "Tenement_Single_Ext_1", "Height", "Floor Height", 
+            "Roof_Structure", "Terrace", "Parking", "Parking_Area", "Waterbody", "Heritage",
+            "Existing", "Service_floor", "Common Area", "Column", "Wall", "Text", "Dimension", 
+            "Section", "Print", "Mis1", "Block_Text", "Fire Refuge", "Triple_Balcony", "Goomty", 
+            "Court Yard", "Shaft", "Corridor", "STP", "RWH", "Pavement", "EVCP", "Solar", 
+            "Baby Care Room"
+        ]);
+
+        // Define accepted layers as an array
+        const acceptedLayers = ['Residential', 'Mercantile_wholesale', 'Mercantile_retail', 'Business',
+            'Institutional', 'Storage', 'Assembly', 'Hazardous', 'Industrial', 'Educational'];
+
+        // Lineweight always ByLayer
+        const ByLayers = ['Common Area', 'Cupboard', 'Ground Coverage', 'Open Space','Roof_Structure', 'Terrace', 'Internal Road', 'Loft'];
+
+        // Lineweight never ByLayer
+        const NeverByLayers = ['Existing', 'Floor Height', 'Height', 'Parking','Parking_Area', 'Stair', 'Tenement', 'Tenement_Single', 
+        'Tenement_Ext_1', 'Tenement_Single_Ext_1', 'Tree Cover', 'Shaft', 'Court Yard', 'Heritage', 'Waterbody', 'Splay', 'Strip', 'Corridor','Lift'
+        ];
+
+        // Define condition styles with flexible conditions
+        const conditions = [
+            {
+            // New condition to check for invalid Layer names
+            check: (cells, indices) => !validLayerNames.has(cells[indices.layer]),
+            style: 'text-red'
+            },
+            {
+                check: (cells, indices) => cells[indices.count] !== '1',
+                style: 'text-red'
+            },
+            {
+                check: (cells, indices) => cells[indices.linetype] !== 'ByLayer' && cells[indices.linetype] !== 'DASHED' && cells[indices.linetype] !== 'PHANTOM2',
+                style: 'text-red'
+            },
+            {
+                check: (cells, indices) => cells[indices.name] === 'Polyline' && cells[indices.closed] === 0,
+                style: 'text-red'
+            },
+            {
+                check: (cells, indices) => cells[indices.name] === 'Polyline' &&  cells[indices.area].trim() === '',
+                style: 'text-red'
+            },
+            {
+                // Check if the layer is within the accepted layers and linetype is not 'ByLayer & DASHED'
+                check: (cells, indices) => acceptedLayers.includes(cells[indices.layer]) && cells[indices.linetype] !== 'ByLayer' && cells[indices.linetype] !== 'DASHED' ,
+                style: 'text-red'
+            },
+            {
+                // Lineweight always ByLayer
+                check: (cells, indices) => ByLayers.includes(cells[indices.layer]) && cells[indices.name] === 'Polyline' && cells[indices.lineweight] !== 'ByLayer' ,
+                style: 'text-red'
+            },
+            {
+                // Lineweight never ByLayer
+                check: (cells, indices) => NeverByLayers.includes(cells[indices.layer]) && cells[indices.name] === 'Polyline' && cells[indices.lineweight] === 'ByLayer' ,
+                style: 'text-red'
+            },
+            {
+                // Combined Check for Plot and Ground Coverage
+                check: (cells, indices) => {
+                    const colorValue = parseInt(cells[indices.color], 10);
+
+                    // Check for 'Plot' condition
+                    const plotCheck = cells[indices.name] === 'Polyline' && cells[indices.layer] === 'Plot' && (colorValue !== 240 || cells[indices.lineweight] !== '0.50 mm') ;
+
+                    // Check for 'Ground Coverage' condition
+                    const groundCoverageCheck = cells[indices.layer] === 'Ground Coverage' && (colorValue < 53 || colorValue > 152) && cells[indices.name] === 'Polyline';
+
+                    // Combine both conditions using &&
+                    return plotCheck || groundCoverageCheck;
+                },
+                style: 'text-red'
+            }
+        ];
+
+        // First pass: Detect duplicates
+        rows.forEach((row, index) => {
+            const cells = row.split(',');
+
+            if (index > 0 && row.trim() !== '') { // Skip header row
+                const rowStr = cells.join(',');
+                if (seenRows.has(rowStr)) {
+                    duplicateRows.add(rowStr);
+                }
+                seenRows.add(rowStr);
+            }
+        });
+
+        // Second pass: Create table and apply styles
+        let columnIndices = {};
+
+        rows.forEach((row, index) => {
+            const cells = row.split(',');
+
+            if (index === 0) {
+                // Create table headers and determine column indices
+                cells.forEach((cell, cellIndex) => {
+                    const th = document.createElement('th');
+                    th.textContent = cell;
+                    th.setAttribute('name', `header-${cellIndex}`);
+                    th.setAttribute('id', `header-${cellIndex}`);
+                    tableHeader.appendChild(th);
+
+                    // Store column indices
+                    if (cell.trim() === 'Count') {
+                        columnIndices.count = cellIndex;
+                    }
+                    if (cell.trim() === 'Name') {
+                        columnIndices.name = cellIndex;
+                    }
+                    if (cell.trim() === 'Color') {
+                        columnIndices.color = cellIndex;
+                    }
+                    if (cell.trim() === 'Layer') {
+                        columnIndices.layer = cellIndex;
+                    }
+                    if (cell.trim() === 'Length') {
+                        columnIndices.length = cellIndex;
+                    }
+                    if (cell.trim() === 'Linetype') {
+                        columnIndices.linetype = cellIndex;
+                    }
+                    if (cell.trim() === 'Lineweight') {
+                        columnIndices.lineweight = cellIndex;
+                    }
+                    if (cell.trim() === 'Area') {
+                        columnIndices.area = cellIndex;
+                    }
+                    if (cell.trim() === 'Closed') {
+                        columnIndices.closed = cellIndex;
+                    }
+                });
+                console.log('Column Indices:', columnIndices);
+            } else if (row.trim() !== '') {
+                // Create table rows
+                const newRow = tableBody.insertRow();
+                const rowStr = cells.join(',');
+
+                // Check for duplicate and apply duplicate style
+                if (duplicateRows.has(rowStr)) {
+                    newRow.classList.add('duplicate');
+                }
+
+                // Apply styles based on conditions
+                conditions.forEach(condition => {
+                    if (condition.check(cells, columnIndices)) {
+                        newRow.classList.add(condition.style);
+                    }
+                });
+
+                cells.forEach((cell, cellIndex) => {
+                    const newCell = newRow.insertCell();
+                    newCell.textContent = cell;
+                    newCell.setAttribute('name', `row${index}-cell${cellIndex}`);
+                    newCell.setAttribute('id', `row${index}-cell${cellIndex}`);
+                });
+            }
+        });
+    }
+
+    // Check for existing data in localStorage when the page loads
+    window.onload = function() {
+        const storedCsvData = localStorage.getItem('csvData');
+        if (storedCsvData) {
+            displayData(storedCsvData);
+        }
+    };
+
+    document.getElementById('file-input').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const csv = XLSX.utils.sheet_to_csv(worksheet);
+                localStorage.setItem('csvData', csv); // Save data to localStorage
+                displayData(csv);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    });
+
+    document.getElementById('generate-tables').addEventListener('click', function() {
+        window.location.href = 'tables.html';
+    });
+
+    document.getElementById('calculate').addEventListener('click', function() {
+        window.location.href = 'filtered.html'; // Redirect to filtered.html
+    });
+
+    document.getElementById('instruction').addEventListener('click', function() {
+        window.location.href = 'instruction.html'; // Redirect to filtered.html
+    });
+</script>
+
+</body>
+</html>
